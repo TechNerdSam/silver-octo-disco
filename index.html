@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nūr Frequencies - Ruqyah Vibratoire</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React & ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- Babel pour compiler JSX dans le navigateur -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* Custom Scrollbar for better UX */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #060913; }
+    ::-webkit-scrollbar-thumb { background: #f59e0b; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #fbbf24; }
+  </style>
+</head>
+<body class="bg-[#060913]">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // --- COMPOSANTS D'ICÔNES (Remplaçant lucide-react pour le mode 1 fichier) ---
+    const Play = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="5 3 19 12 5 21 5 3"/></svg>;
+    const Pause = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>;
+    const Volume2 = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>;
+    const Shield = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>;
+    const Activity = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>;
+    const Sparkles = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>;
+    const Globe = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>;
+    const ChevronRight = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="9 18 15 12 9 6"/></svg>;
+    const Menu = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>;
+    const X = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>;
+    const Music = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>;
+    const Radio = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/></svg>;
+    const Info = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>;
+    const Search = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>;
+
+    // --- DICTIONNAIRE DE TRADUCTION (i18n) ---
+    const translations = {
+      FR: {
+        navScience: "La Science",
+        navLibrary: "Bibliothèque FVC",
+        heroBadge: "100% Gratuit & Accessible à tous",
+        heroTitle1: "L'Élévation par la",
+        heroTitle2: "Résonance Divine",
+        heroDesc: "Découvrez la première plateforme mondiale gratuite fusionnant la puissance millénaire de la Ruqyah avec la précision des fréquences vibratoires curatives.",
+        heroBtnStart: "Commencer la Guérison",
+        heroBtnExplore: "Explorer le Catalogue",
+        scienceBadge: "Fondements Scientifiques",
+        scienceTitle: "La Synergie du Son et de l'Esprit",
+        scienceP1: "Notre plateforme utilise des ondes isochrones et des fréquences solfèges (comme le 528Hz, connu pour la réparation de l'ADN) superposées à des récitations coraniques de très haute définition.",
+        scienceP2: "Cette ingénierie acoustique permet au cerveau d'entrer plus rapidement en ondes Theta (état méditatif profond), maximisant la réceptivité spirituelle, la relaxation du système nerveux et la purification cellulaire.",
+        scienceBtn: "Écouter les fréquences",
+        libTitle: "Le Sanctuaire des Fréquences",
+        libDesc: "Accès libre et gratuit à nos 39 sessions de Ruqyah Vibratoire",
+        libSearch: "Rechercher une sourate, un bienfait ou une fréquence...",
+        hqAudio: "Audio HQ",
+        footerDesc: "Plateforme 100% gratuite propulsée par une architecture d'élite pour la guérison spirituelle par le Coran et les fréquences vibratoires.",
+        footerRights: "© 2026 Nūr Frequencies. Tous droits réservés.",
+        compliance: "Accessibilité WCAG | Audit Axe-core validé.",
+        thetaWaves: "Ondes Theta Actives",
+        thetaDesc: "4-8 Hz (Zone de Guérison)"
+      },
+      EN: {
+        navScience: "The Science",
+        navLibrary: "Vibrational Library",
+        heroBadge: "100% Free & Accessible to all",
+        heroTitle1: "Elevation through",
+        heroTitle2: "Divine Resonance",
+        heroDesc: "Discover the world's first free platform merging the ancient power of Ruqyah with the precision of healing vibrational frequencies.",
+        heroBtnStart: "Start Healing",
+        heroBtnExplore: "Explore Catalog",
+        scienceBadge: "Scientific Foundations",
+        scienceTitle: "The Synergy of Sound and Spirit",
+        scienceP1: "Our platform uses isochronic tones and solfeggio frequencies (like 528Hz, known for DNA repair) overlaid on ultra-high-definition Quranic recitations.",
+        scienceP2: "This acoustic engineering allows the brain to quickly enter Theta waves (deep meditative state), maximizing spiritual receptivity, nervous system relaxation, and cellular purification.",
+        scienceBtn: "Listen to frequencies",
+        libTitle: "The Frequency Sanctuary",
+        libDesc: "Free and open access to our 39 Vibrational Ruqyah sessions",
+        libSearch: "Search for a surah, benefit, or frequency...",
+        hqAudio: "HQ Audio",
+        footerDesc: "100% free platform powered by an elite architecture for spiritual healing through the Quran and vibrational frequencies.",
+        footerRights: "© 2026 Nūr Frequencies. All rights reserved.",
+        compliance: "WCAG Accessibility | Validated Axe-core Audit.",
+        thetaWaves: "Active Theta Waves",
+        thetaDesc: "4-8 Hz (Healing Zone)"
+      }
+    };
+
+    // --- BASE DE DONNÉES DES 39 SESSIONS ---
+    const baseTracks = [
+      { id: 1, num: "001", title: "Al-Fatiha", freq: 528, cFR: "Guérison Profonde", cEN: "Deep Healing", bFR: "Restauration de l'ADN et guérison globale", bEN: "DNA restoration and global healing" },
+      { id: 2, num: "002", title: "Al-Baqarah", freq: 741, cFR: "Purification Cellulaire", cEN: "Cellular Purification", bFR: "Nettoyage des toxines spirituelles et protection absolue", bEN: "Cleansing of spiritual toxins and absolute protection" },
+      { id: 3, num: "003", title: "Al-Imran", freq: 396, cFR: "Libération Émotionnelle", cEN: "Emotional Release", bFR: "Libération de la peur et de l'anxiété profonde", bEN: "Liberation from deep fear and anxiety" },
+      { id: 4, num: "004", title: "An-Nisa", freq: 417, cFR: "Résolution & Paix", cEN: "Resolution & Peace", bFR: "Résolution des traumatismes passés et harmonie", bEN: "Resolution of past traumas and harmony" },
+      { id: 5, num: "005", title: "Al-Ma'idah", freq: 639, cFR: "Harmonie Relationnelle", cEN: "Relational Harmony", bFR: "Connexion, compassion et pardon interpersonnel", bEN: "Connection, compassion, and interpersonal forgiveness" },
+      { id: 6, num: "006", title: "Al-An'am", freq: 852, cFR: "Éveil Spirituel", cEN: "Spiritual Awakening", bFR: "Retour à l'ordre spirituel et clarté mentale", bEN: "Return to spiritual order and mental clarity" },
+      { id: 7, num: "007", title: "Al-A'raf", freq: 963, cFR: "Connexion Divine", cEN: "Divine Connection", bFR: "Reconnexion suprême et élévation de l'âme", bEN: "Supreme reconnection and soul elevation" },
+      { id: 8, num: "008", title: "Al-Anfal", freq: 174, cFR: "Apaisement Physique", cEN: "Physical Relief", bFR: "Réduction de la douleur et ancrage corporel", bEN: "Pain reduction and body grounding" },
+      { id: 9, num: "009", title: "At-Tawbah", freq: 285, cFR: "Régénération", cEN: "Regeneration", bFR: "Régénération des tissus et de l'énergie vitale", bEN: "Regeneration of tissues and vital energy" },
+      { id: 10, num: "010", title: "Yunus", freq: 528, cFR: "Paix Intérieure", cEN: "Inner Peace", bFR: "Acceptation et réparation des blessures de l'âme", bEN: "Acceptance and repair of soul wounds" },
+      { id: 11, num: "011", title: "Hud", freq: 417, cFR: "Courage & Force", cEN: "Courage & Strength", bFR: "Force face aux épreuves et résilience", bEN: "Strength facing trials and resilience" },
+      { id: 12, num: "012", title: "Yusuf", freq: 639, cFR: "Guérison du Chagrin", cEN: "Healing Sadness", bFR: "Soulagement de la tristesse profonde et de la dépression", bEN: "Relief from deep sadness and depression" },
+      { id: 13, num: "013", title: "Ar-Ra'd", freq: 741, cFR: "Équilibre Nerveux", cEN: "Nervous System Balance", bFR: "Équilibre du système nerveux central et ancrage", bEN: "Central nervous system balance and grounding" },
+      { id: 14, num: "014", title: "Ibrahim", freq: 852, cFR: "Abondance", cEN: "Abundance", bFR: "Gratitude, abondance spirituelle et matérielle", bEN: "Gratitude, spiritual and material abundance" },
+      { id: 15, num: "015", title: "Al-Hijr", freq: 396, cFR: "Lâcher-Prise", cEN: "Letting Go", bFR: "Dissipation de la culpabilité et des regrets", bEN: "Dissipation of guilt and regrets" },
+      { id: 16, num: "016", title: "An-Nahl", freq: 528, cFR: "Vitalité", cEN: "Vitality", bFR: "Vitalité physique et restauration de la santé", bEN: "Physical vitality and health restoration" },
+      { id: 17, num: "017", title: "Al-Isra", freq: 963, cFR: "Élévation", cEN: "Elevation", bFR: "Élévation de la conscience et clairvoyance", bEN: "Elevation of consciousness and clairvoyance" },
+      { id: 18, num: "018", title: "Al-Kahf", freq: 432, cFR: "Protection & Harmonie", cEN: "Protection & Harmony", bFR: "Protection divine absolue et harmonie naturelle", bEN: "Absolute divine protection and natural harmony" },
+      { id: 19, num: "019", title: "Maryam", freq: 528, cFR: "Miracles", cEN: "Miracles", bFR: "Facilitation des miracles et douceur intérieure", bEN: "Facilitation of miracles and inner sweetness" },
+      { id: 20, num: "020", title: "Ta-Ha", freq: 396, cFR: "Clarté Mentale", cEN: "Mental Clarity", bFR: "Apaisement définitif des pensées obsessionnelles", bEN: "Definitive calming of obsessive thoughts" },
+      { id: 21, num: "021", title: "Al-Anbiya", freq: 639, cFR: "Sagesse Prophétique", cEN: "Prophetic Wisdom", bFR: "Connexion spirituelle à la lignée des prophètes", bEN: "Spiritual connection to the prophetic lineage" },
+      { id: 22, num: "022", title: "Al-Hajj", freq: 741, cFR: "Détoxification", cEN: "Detoxification", bFR: "Purger l'esprit des influences et énergies toxiques", bEN: "Purging the mind of toxic influences and energies" },
+      { id: 23, num: "023", title: "Al-Mu'minun", freq: 852, cFR: "Renforcement", cEN: "Strengthening", bFR: "Renforcement inébranlable de la foi", bEN: "Unshakable strengthening of faith" },
+      { id: 24, num: "024", title: "An-Nur", freq: 963, cFR: "Lumière Divine", cEN: "Divine Light", bFR: "Illumination du cœur, de l'aura et de l'environnement", bEN: "Illumination of the heart, aura, and environment" },
+      { id: 25, num: "025", title: "Al-Furqan", freq: 417, cFR: "Discernement", cEN: "Discernment", bFR: "Clarté de jugement et dissipation de l'illusion mentale", bEN: "Clarity of judgment and dissipation of mental illusion" },
+      { id: 26, num: "026", title: "Ash-Shu'ara", freq: 528, cFR: "Résonance Cellulaire", cEN: "Cellular Resonance", bFR: "Harmonie vibratoire dans toutes les cellules du corps", bEN: "Vibrational harmony in all cells of the body" },
+      { id: 27, num: "027", title: "An-Naml", freq: 639, cFR: "Intelligence Émotionnelle", cEN: "Emotional Intelligence", bFR: "Sagesse face aux épreuves et patience infinie", bEN: "Wisdom in the face of trials and infinite patience" },
+      { id: 28, num: "028", title: "Al-Qasas", freq: 741, cFR: "Déblocage", cEN: "Unblocking", bFR: "Libération des blocages de vie et ouverture des voies", bEN: "Release of life blockages and opening of paths" },
+      { id: 29, num: "029", title: "Al-'Ankabut", freq: 396, cFR: "Résilience", cEN: "Resilience", bFR: "Résistance spirituelle face au stress extrême", bEN: "Spiritual resistance against extreme stress" },
+      { id: 30, num: "030", title: "Ar-Rum", freq: 285, cFR: "Alignement", cEN: "Alignment", bFR: "Alignement parfait du corps, de l'esprit et de l'âme", bEN: "Perfect alignment of body, mind, and soul" },
+      { id: 31, num: "031", title: "Luqman", freq: 174, cFR: "Soulagement", cEN: "Relief", bFR: "Soulagement des tensions physiques et mentales", bEN: "Relief of physical and mental tensions" },
+      { id: 32, num: "032", title: "As-Sajdah", freq: 852, cFR: "Soumission Pacifique", cEN: "Peaceful Submission", bFR: "Profonde paix absolue et sérénité", bEN: "Deep absolute peace and serenity" },
+      { id: 33, num: "036", title: "Ya-Sin", freq: 528, cFR: "Cœur du Coran", cEN: "Heart of the Quran", bFR: "Guérison majeure du cœur physique et spirituel", bEN: "Major healing of the physical and spiritual heart" },
+      { id: 34, num: "055", title: "Ar-Rahman", freq: 639, cFR: "Compassion Universelle", cEN: "Universal Compassion", bFR: "Équilibre émotionnel, amour pur et grâce divine", bEN: "Emotional balance, pure love, and divine grace" },
+      { id: 35, num: "056", title: "Al-Waqi'ah", freq: 852, cFR: "Magnétisme", cEN: "Magnetism", bFR: "Attraction de l'abondance et éloignement de la pauvreté", bEN: "Attraction of abundance and warding off poverty" },
+      { id: 36, num: "067", title: "Al-Mulk", freq: 432, cFR: "Sérénité Nocturne", cEN: "Nocturnal Serenity", bFR: "Protection durant le sommeil et paix", bEN: "Protection during sleep and peace" },
+      { id: 37, num: "112", title: "Al-Ikhlas", freq: 963, cFR: "Pureté Absolue", cEN: "Absolute Purity", bFR: "Unité divine et purification totale de l'intention", bEN: "Divine unity and total purification of intention" },
+      { id: 38, num: "113", title: "Al-Falaq", freq: 741, cFR: "Bouclier Divin", cEN: "Divine Shield", bFR: "Protection totale contre les énergies et entités négatives", bEN: "Total protection against negative energies and entities" },
+      { id: 39, num: "114", title: "An-Nas", freq: 396, cFR: "Rempart Mental", cEN: "Mental Fortress", bFR: "Protection infaillible contre les mauvaises suggestions", bEN: "Infallible protection against evil suggestions" }
+    ];
+
+    const images = [
+      "https://images.unsplash.com/photo-1518002054494-3a6f94352e9d?auto=format&fit=crop&q=80&w=400&h=400",
+      "https://images.unsplash.com/photo-1507608616759-54f48f0af0ee?auto=format&fit=crop&q=80&w=400&h=400",
+      "https://images.unsplash.com/photo-1519834785169-98be25ec3f84?auto=format&fit=crop&q=80&w=400&h=400",
+      "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&q=80&w=400&h=400",
+      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=400&h=400",
+      "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&q=80&w=400&h=400"
+    ];
+
+    const mockTracks = baseTracks.map((t, idx) => ({
+      id: t.id,
+      title: `Sourate ${t.title}`,
+      frequency: t.freq,
+      freqStr: `${t.freq} Hz`,
+      category: { FR: t.cFR, EN: t.cEN },
+      benefit: { FR: t.bFR, EN: t.bEN },
+      audioUrl: `https://server8.mp3quran.net/afs/${t.num}.mp3`,
+      image: images[idx % images.length],
+      duration: "HQ"
+    }));
+
+    // --- APPLICATION PRINCIPALE ---
+    function App() {
+      const [lang, setLang] = useState('FR');
+      const t = translations[lang];
+
+      const [isScrolled, setIsScrolled] = useState(false);
+      const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+      const [isLoading, setIsLoading] = useState(true);
+      const [searchQuery, setSearchQuery] = useState('');
+      
+      const [activeTrack, setActiveTrack] = useState(null);
+      const [isPlaying, setIsPlaying] = useState(false);
+
+      const audioRef = useRef(null);
+      const [progress, setProgress] = useState(0);
+      const [audioDuration, setAudioDuration] = useState(0);
+      const [volume, setVolume] = useState(1);
+      
+      const audioCtxRef = useRef(null);
+      const oscRef = useRef(null);
+      const oscGainRef = useRef(null);
+
+      const scrollToSection = (id) => {
+        setIsMobileMenuOpen(false);
+        const element = document.getElementById(id);
+        if (element) {
+          const offset = 80;
+          const bodyRect = document.body.getBoundingClientRect().top;
+          const elementRect = element.getBoundingClientRect().top;
+          const elementPosition = elementRect - bodyRect;
+          window.scrollTo({ top: elementPosition - offset, behavior: 'smooth' });
+        }
+      };
+
+      const playNextTrack = () => {
+        if (!activeTrack) return;
+        const currentIndex = mockTracks.findIndex(t => t.id === activeTrack.id);
+        const nextIndex = (currentIndex + 1) % mockTracks.length;
+        setActiveTrack(mockTracks[nextIndex]);
+        setIsPlaying(true);
+      };
+
+      const playPrevTrack = () => {
+        if (!activeTrack) return;
+        const currentIndex = mockTracks.findIndex(t => t.id === activeTrack.id);
+        const prevIndex = (currentIndex - 1 + mockTracks.length) % mockTracks.length;
+        setActiveTrack(mockTracks[prevIndex]);
+        setIsPlaying(true);
+      };
+
+      const startFrequency = (freqVal) => {
+        if (!freqVal) return;
+        if (!audioCtxRef.current) {
+          audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtxRef.current.state === 'suspended') {
+          audioCtxRef.current.resume();
+        }
+        stopFrequency();
+
+        oscRef.current = audioCtxRef.current.createOscillator();
+        oscGainRef.current = audioCtxRef.current.createGain();
+
+        oscRef.current.type = 'sine';
+        oscRef.current.frequency.setValueAtTime(freqVal, audioCtxRef.current.currentTime);
+        oscGainRef.current.gain.setValueAtTime(volume * 0.05, audioCtxRef.current.currentTime);
+
+        oscRef.current.connect(oscGainRef.current);
+        oscGainRef.current.connect(audioCtxRef.current.destination);
+        oscRef.current.start();
+      };
+
+      const stopFrequency = () => {
+        if (oscRef.current) {
+          try {
+            oscRef.current.stop();
+            oscRef.current.disconnect();
+          } catch (e) {}
+          oscRef.current = null;
+        }
+      };
+
+      useEffect(() => {
+        const handleScroll = () => setIsScrolled(window.scrollY > 50);
+        window.addEventListener('scroll', handleScroll);
+        const timer = setTimeout(() => setIsLoading(false), 1500); 
+        return () => {
+          window.removeEventListener('scroll', handleScroll);
+          clearTimeout(timer);
+        };
+      }, []);
+
+      useEffect(() => {
+        if (audioRef.current) {
+          if (isPlaying) {
+            audioRef.current.play().catch(e => console.error("Erreur lecture:", e));
+            startFrequency(activeTrack?.frequency);
+          } else {
+            audioRef.current.pause();
+            stopFrequency();
+          }
+        }
+        return () => stopFrequency();
+      }, [isPlaying, activeTrack]);
+
+      const handleTimeUpdate = () => {
+        if (audioRef.current) setProgress(audioRef.current.currentTime);
+      };
+
+      const handleLoadedMetadata = () => {
+        if (audioRef.current) setAudioDuration(audioRef.current.duration);
+      };
+
+      const handleSeek = (e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const percent = (e.clientX - rect.left) / rect.width;
+        if (audioRef.current) {
+          audioRef.current.currentTime = percent * (audioDuration || 1);
+          setProgress(audioRef.current.currentTime);
+        }
+      };
+
+      const handleVolumeChange = (e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        let percent = (e.clientX - rect.left) / rect.width;
+        percent = Math.max(0, Math.min(1, percent));
+        setVolume(percent);
+        
+        if (audioRef.current) audioRef.current.volume = percent;
+        if (oscGainRef.current && audioCtxRef.current) {
+          oscGainRef.current.gain.setValueAtTime(percent * 0.05, audioCtxRef.current.currentTime);
+        }
+      };
+
+      const formatTime = (timeInSeconds) => {
+        if (isNaN(timeInSeconds)) return "00:00";
+        const m = Math.floor(timeInSeconds / 60).toString().padStart(2, '0');
+        const s = Math.floor(timeInSeconds % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+      };
+
+      const handlePlay = (track) => {
+        if (activeTrack?.id === track.id) {
+          setIsPlaying(!isPlaying);
+        } else {
+          setActiveTrack(track);
+          setIsPlaying(true);
+        }
+      };
+
+      const filteredTracks = mockTracks.filter(track => 
+        track.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        track.benefit[lang].toLowerCase().includes(searchQuery.toLowerCase()) ||
+        track.freqStr.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        track.category[lang].toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+      return (
+        <div className="min-h-screen text-gray-200 font-sans selection:bg-amber-500/30 overflow-x-hidden">
+          
+          <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
+            <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-indigo-900/20 blur-[120px] animate-pulse"></div>
+            <div className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-amber-900/10 blur-[150px]"></div>
+            <div className="absolute top-[40%] left-[30%] w-[30vw] h-[30vw] rounded-full bg-teal-900/10 blur-[100px] animate-bounce" style={{ animationDuration: '10s' }}></div>
+          </div>
+
+          <header className={`fixed top-0 w-full z-50 transition-all duration-500 ${isScrolled ? 'bg-[#060913]/80 backdrop-blur-xl border-b border-white/5 py-4' : 'bg-transparent py-6'}`}>
+            <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className="relative flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-tr from-amber-400 to-amber-600 shadow-[0_0_15px_rgba(251,191,36,0.3)]">
+                  <Activity className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-xl font-bold tracking-widest text-white uppercase font-serif">
+                  Nūr<span className="text-amber-400 font-light">Freq</span>
+                </span>
+              </div>
+
+              <nav className="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide">
+                <button onClick={() => scrollToSection('science')} className="text-gray-400 hover:text-amber-400 transition-colors">{t.navScience}</button>
+                <button onClick={() => scrollToSection('library')} className="text-gray-400 hover:text-amber-400 transition-colors">{t.navLibrary}</button>
+              </nav>
+
+              <div className="hidden md:flex items-center gap-4">
+                <button 
+                  onClick={() => setLang(lang === 'FR' ? 'EN' : 'FR')}
+                  className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 px-5 py-2 rounded-full text-sm font-semibold transition-all backdrop-blur-md text-amber-50"
+                >
+                  <Globe className="w-4 h-4 text-amber-400" /> {lang === 'FR' ? 'English' : 'Français'}
+                </button>
+              </div>
+
+              <button className="md:hidden text-white" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
+
+            {isMobileMenuOpen && (
+              <div className="md:hidden absolute top-full left-0 w-full bg-[#060913]/95 backdrop-blur-xl border-b border-white/10 py-4 px-6 flex flex-col gap-4 shadow-2xl">
+                <button onClick={() => scrollToSection('science')} className="text-left text-gray-300 py-3 border-b border-white/5 text-sm uppercase tracking-wider">{t.navScience}</button>
+                <button onClick={() => scrollToSection('library')} className="text-left text-gray-300 py-3 border-b border-white/5 text-sm uppercase tracking-wider">{t.navLibrary}</button>
+                <button onClick={() => setLang(lang === 'FR' ? 'EN' : 'FR')} className="text-left text-amber-400 py-3 font-bold flex items-center gap-2">
+                  <Globe className="w-5 h-5" /> {lang === 'FR' ? 'Switch to English' : 'Passer en Français'}
+                </button>
+              </div>
+            )}
+          </header>
+
+          <main className="relative z-10 pt-32 pb-24">
+            <section className="max-w-7xl mx-auto px-6 md:px-12 pt-12 pb-24 flex flex-col items-center text-center">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold uppercase tracking-widest mb-8">
+                <Sparkles className="w-3 h-3" /> {t.heroBadge}
+              </div>
+              <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight font-serif">
+                {t.heroTitle1} <br className="hidden md:block"/>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-600">
+                  {t.heroTitle2}
+                </span>
+              </h1>
+              <p className="max-w-2xl text-lg md:text-xl text-gray-400 mb-10 leading-relaxed font-light">
+                {t.heroDesc}
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                <button 
+                  onClick={() => { handlePlay(mockTracks[0]); scrollToSection('library'); }}
+                  className="px-8 py-4 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold text-sm tracking-wide hover:shadow-[0_0_30px_rgba(245,158,11,0.4)] hover:scale-105 transition-all flex items-center justify-center gap-2"
+                >
+                  <Play className="w-4 h-4 fill-white" />
+                  {t.heroBtnStart}
+                </button>
+                <button 
+                  onClick={() => scrollToSection('library')}
+                  className="px-8 py-4 rounded-full bg-white/5 border border-white/10 text-white font-bold text-sm tracking-wide hover:bg-white/10 transition-all backdrop-blur-md flex items-center justify-center gap-2"
+                >
+                  {t.heroBtnExplore}
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </section>
+
+            <section id="science" className="max-w-7xl mx-auto px-6 md:px-12 py-20 relative">
+              <div className="absolute inset-0 bg-gradient-to-b from-indigo-900/5 via-transparent to-transparent pointer-events-none"></div>
+              <div className="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold uppercase tracking-widest mb-6">
+                    <Info className="w-3 h-3" /> {t.scienceBadge}
+                  </div>
+                  <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 font-serif">{t.scienceTitle}</h2>
+                  <p className="text-gray-400 mb-6 leading-relaxed">{t.scienceP1}</p>
+                  <p className="text-gray-400 mb-8 leading-relaxed">{t.scienceP2}</p>
+                  <button onClick={() => scrollToSection('library')} className="text-amber-400 font-semibold flex items-center gap-2 hover:gap-3 transition-all">
+                    {t.scienceBtn} <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+                <div className="relative">
+                  <div className="aspect-square rounded-3xl overflow-hidden border border-white/10 relative">
+                    <img src="https://images.unsplash.com/photo-1518002054494-3a6f94352e9d?auto=format&fit=crop&q=80&w=800&h=800" alt="Ondes sonores" className="w-full h-full object-cover opacity-60 mix-blend-screen" />
+                    <div className="absolute inset-0 bg-gradient-to-tr from-[#060913] to-transparent"></div>
+                  </div>
+                  <div className="absolute -bottom-6 -left-6 bg-[#0a0d18] p-6 rounded-2xl border border-white/10 shadow-2xl">
+                    <div className="flex items-center gap-4">
+                      <Activity className="w-8 h-8 text-amber-500 animate-pulse" />
+                      <div>
+                        <div className="text-white font-bold">{t.thetaWaves}</div>
+                        <div className="text-xs text-gray-500">{t.thetaDesc}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section id="library" className="max-w-7xl mx-auto px-6 md:px-12 py-20">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
+                <div>
+                  <h2 className="text-3xl font-bold text-white mb-2 font-serif">{t.libTitle}</h2>
+                  <p className="text-amber-400 text-sm font-medium">{t.libDesc}</p>
+                </div>
+                
+                <div className="relative w-full md:w-72">
+                  <input 
+                    type="text" 
+                    placeholder={t.libSearch}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-full py-3 px-12 text-sm text-white focus:outline-none focus:border-amber-500 transition-colors"
+                  />
+                  <Search className="w-4 h-4 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {isLoading ? (
+                  Array(8).fill(0).map((_, i) => (
+                    <div key={`skeleton-${i}`} className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col gap-4 animate-pulse">
+                      <div className="w-full h-48 bg-white/10 rounded-xl"></div>
+                      <div className="w-1/3 h-4 bg-white/10 rounded"></div>
+                      <div className="w-3/4 h-6 bg-white/10 rounded"></div>
+                      <div className="w-full flex justify-between items-center mt-2">
+                        <div className="w-1/4 h-4 bg-white/10 rounded"></div>
+                        <div className="w-8 h-8 rounded-full bg-white/10"></div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  filteredTracks.map((track) => (
+                    <div 
+                      key={track.id} 
+                      className="group relative bg-white/[0.02] border border-white/5 rounded-2xl p-4 hover:bg-white/[0.04] hover:border-amber-500/30 transition-all duration-300 backdrop-blur-sm cursor-pointer flex flex-col"
+                      onClick={() => handlePlay(track)}
+                    >
+                      <div className="relative overflow-hidden rounded-xl mb-4 aspect-square shrink-0">
+                        <img src={track.image} alt={track.title} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                        
+                        <div className={`absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity duration-300 ${activeTrack?.id === track.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                          <div className="w-12 h-12 rounded-full bg-amber-500 text-white flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.5)]">
+                            {activeTrack?.id === track.id && isPlaying ? <Pause className="w-5 h-5 fill-white" /> : <Play className="w-5 h-5 fill-white ml-1" />}
+                          </div>
+                        </div>
+
+                        <div className="absolute bottom-3 left-3 px-2 py-1 bg-black/60 backdrop-blur-md rounded text-[10px] font-bold text-amber-400 tracking-wider">
+                          {track.freqStr}
+                        </div>
+                      </div>
+                      
+                      <div className="text-[10px] text-gray-500 mb-1 font-bold uppercase tracking-wider">{track.category[lang]}</div>
+                      <h3 className="text-lg font-bold text-white mb-2">{track.title}</h3>
+                      <p className="text-xs text-gray-400 mb-4 line-clamp-2 leading-relaxed flex-grow">
+                        {track.benefit[lang]}
+                      </p>
+                      
+                      <div className="flex justify-between items-center text-xs text-gray-500 pt-3 border-t border-white/5">
+                        <span className="flex items-center gap-1.5"><Radio className="w-3 h-3 text-emerald-500" /> {t.hqAudio}</span>
+                        <span>{track.duration}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
+                
+                {!isLoading && filteredTracks.length === 0 && (
+                  <div className="col-span-full py-12 text-center text-gray-400">
+                    Aucune session ne correspond à votre recherche.
+                  </div>
+                )}
+              </div>
+            </section>
+          </main>
+
+          <footer className="border-t border-white/5 bg-[#030409] py-12 relative z-10 pb-32">
+            <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              <div>
+                 <div className="flex items-center gap-2 mb-4">
+                  <Activity className="w-5 h-5 text-amber-500" />
+                  <span className="text-lg font-bold tracking-widest text-white uppercase font-serif">
+                    Nūr<span className="text-amber-400 font-light">Freq</span>
+                  </span>
+                </div>
+                <p className="text-gray-500 text-sm max-w-sm leading-relaxed">
+                  {t.footerDesc}
+                </p>
+              </div>
+              <div className="md:text-right">
+                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold uppercase tracking-widest border border-emerald-500/20">
+                   {t.heroBadge}
+                 </div>
+              </div>
+            </div>
+            <div className="max-w-7xl mx-auto px-6 md:px-12 mt-12 pt-8 border-t border-white/5 text-center text-xs text-gray-600 flex flex-col items-center gap-2">
+              <span>{t.footerRights}</span>
+              <span>{t.compliance}</span>
+            </div>
+          </footer>
+
+          <div className={`fixed bottom-0 left-0 w-full bg-[#0a0d18]/95 backdrop-blur-xl border-t border-amber-500/20 p-4 transform transition-transform duration-500 z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] ${activeTrack ? 'translate-y-0' : 'translate-y-full'}`}>
+            
+            {activeTrack && (
+              <audio 
+                ref={audioRef} 
+                src={activeTrack.audioUrl} 
+                onTimeUpdate={handleTimeUpdate}
+                onLoadedMetadata={handleLoadedMetadata}
+                onEnded={playNextTrack}
+              />
+            )}
+
+            <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4 w-1/3">
+                <div className="w-12 h-12 rounded bg-white/10 overflow-hidden relative shrink-0">
+                  {activeTrack && <img src={activeTrack.image} alt="cover" className="w-full h-full object-cover" />}
+                  {isPlaying && (
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center gap-0.5">
+                      <div className="w-1 h-3 bg-amber-400 rounded animate-[pulse_0.8s_ease-in-out_infinite]"></div>
+                      <div className="w-1 h-5 bg-amber-400 rounded animate-[pulse_1.2s_ease-in-out_infinite_0.2s]"></div>
+                      <div className="w-1 h-2 bg-amber-400 rounded animate-[pulse_0.6s_ease-in-out_infinite_0.4s]"></div>
+                    </div>
+                  )}
+                </div>
+                <div className="hidden sm:block truncate">
+                  <div className="text-sm font-bold text-white truncate">{activeTrack?.title}</div>
+                  <div className="text-xs text-amber-400 truncate">{activeTrack?.benefit[lang]} • {activeTrack?.freqStr}</div>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center gap-2 w-1/3">
+                <div className="flex items-center gap-6">
+                  <button onClick={playPrevTrack} className="text-gray-400 hover:text-white transition-colors hover:scale-110">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5"></line></svg>
+                  </button>
+                  <button 
+                    className="w-10 h-10 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 text-black flex items-center justify-center hover:scale-105 transition-transform shadow-[0_0_15px_rgba(245,158,11,0.4)]"
+                    onClick={() => setIsPlaying(!isPlaying)}
+                  >
+                    {isPlaying ? <Pause className="w-5 h-5 fill-black" /> : <Play className="w-5 h-5 fill-black ml-1" />}
+                  </button>
+                  <button onClick={playNextTrack} className="text-gray-400 hover:text-white transition-colors hover:scale-110">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
+                  </button>
+                </div>
+                <div className="w-full max-w-md flex items-center gap-2 text-[10px] text-gray-500">
+                  <span className="w-8 text-right font-mono">{formatTime(progress)}</span>
+                  <div 
+                    className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden relative cursor-pointer group"
+                    onClick={handleSeek}
+                  >
+                     <div 
+                       className="absolute top-0 left-0 h-full bg-gradient-to-r from-amber-500 to-amber-400 transition-colors"
+                       style={{ width: `${(progress / (audioDuration || 1)) * 100}%` }}
+                     ></div>
+                  </div>
+                  <span className="w-8 font-mono">{formatTime(audioDuration) !== "00:00" ? formatTime(audioDuration) : "--:--"}</span>
+                </div>
+              </div>
+
+              <div className="w-1/3 flex justify-end items-center gap-3 text-gray-400">
+                 <Music className="w-4 h-4 hidden sm:block" />
+                 <div className="flex items-center gap-2 hidden sm:flex">
+                    <Volume2 className="w-4 h-4" />
+                    <div 
+                      className="w-20 h-2 bg-white/10 rounded-full cursor-pointer relative"
+                      onClick={handleVolumeChange}
+                    >
+                      <div 
+                        className="absolute top-0 left-0 h-full bg-white rounded-full pointer-events-none"
+                        style={{ width: `${volume * 100}%` }}
+                      ></div>
+                    </div>
+                 </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      );
+    }
+
+    // --- RENDU DE L'APPLICATION ---
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
