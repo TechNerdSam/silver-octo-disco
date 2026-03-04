@@ -32,7 +32,7 @@
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
 
-    // --- COMPOSANTS D'ICÔNES ---
+    // --- COMPOSANTS D'ICÔNES DE BASE ---
     const Play = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="5 3 19 12 5 21 5 3"/></svg>;
     const Pause = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>;
     const Volume2 = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>;
@@ -56,6 +56,18 @@
     const RepeatIcon = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>;
     const Repeat1Icon = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/><text x="12" y="15" fontSize="8" fontFamily="sans-serif" fill="currentColor" stroke="none" textAnchor="middle" fontWeight="bold">1</text></svg>;
 
+    // --- NOUVELLES ICÔNES SURNATURELLES & PIEUSES ---
+    const Zap = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>;
+    const Eye = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>;
+    const Flame = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z"/></svg>;
+    const Compass = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>;
+    const Anchor = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0020 0h-3"/></svg>;
+    const Feather = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M20.24 12.24a6 6 0 00-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg>;
+    const Star = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>;
+    const Key = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>;
+    const Crown = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>;
+    const Wind = (props) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M9.59 4.59A2 2 0 1111 8H2m10.59 11.41A2 2 0 1014 16H2m15.73-8.27A2.5 2.5 0 1119.5 12H2"/></svg>;
+
     // --- DICTIONNAIRE DE TRADUCTION (i18n) ---
     const translations = {
       FR: {
@@ -73,8 +85,8 @@
         scienceP1: "Notre plateforme utilise des ondes isochrones et des fréquences solfèges (comme le 528Hz, connu pour la réparation de l'ADN) superposées à des récitations coraniques de très haute définition.",
         scienceP2: "Cette ingénierie acoustique permet au cerveau d'entrer plus rapidement en ondes Theta (état méditatif profond), maximisant la réceptivité spirituelle, la relaxation du système nerveux et la purification cellulaire.",
         scienceBtn: "Écouter les fréquences",
-        progSectionTitle: "Thérapies Ciblées",
-        progSectionDesc: "Découvrez nos 7 programmes spécialisés conçus pour répondre aux maux de l'âme et du corps selon la tradition prophétique.",
+        progSectionTitle: "Thérapies Ciblées & Surnaturelles",
+        progSectionDesc: "Découvrez nos 17 programmes spécialisés conçus pour répondre aux maux de l'âme, du corps et détruire les attaques occultes selon la tradition prophétique.",
         playProgram: "Lancer le programme",
         backToPrograms: "Retour aux programmes",
         sessionsCount: "Sessions",
@@ -104,8 +116,8 @@
         scienceP1: "Our platform uses isochronic tones and solfeggio frequencies (like 528Hz, known for DNA repair) overlaid on ultra-high-definition Quranic recitations.",
         scienceP2: "This acoustic engineering allows the brain to quickly enter Theta waves (deep meditative state), maximizing spiritual receptivity, nervous system relaxation, and cellular purification.",
         scienceBtn: "Listen to frequencies",
-        progSectionTitle: "Targeted Therapies",
-        progSectionDesc: "Discover our 7 specialized programs designed to address ailments of the soul and body according to the prophetic tradition.",
+        progSectionTitle: "Targeted & Supernatural Therapies",
+        progSectionDesc: "Discover our 17 specialized programs designed to address ailments of the soul, body, and destroy occult attacks according to the prophetic tradition.",
         playProgram: "Play program",
         backToPrograms: "Back to programs",
         sessionsCount: "Sessions",
@@ -146,7 +158,7 @@
       { id: 20, num: "020", title: "Ta-Ha", freq: 396, cFR: "Clarté Mentale", cEN: "Mental Clarity", bFR: "Apaisement définitif des pensées obsessionnelles", bEN: "Definitive calming of obsessive thoughts" },
       { id: 21, num: "021", title: "Al-Anbiya", freq: 639, cFR: "Sagesse Prophétique", cEN: "Prophetic Wisdom", bFR: "Connexion spirituelle à la lignée des prophètes", bEN: "Spiritual connection to the prophetic lineage" },
       { id: 22, num: "022", title: "Al-Hajj", freq: 741, cFR: "Détoxification", cEN: "Detoxification", bFR: "Purger l'esprit des influences et énergies toxiques", bEN: "Purging the mind of toxic influences and energies" },
-      { id: 23, num: "023", title: "Al-Mu'minun", freq: 852, cFR: "Renforcement", cEN: "Strengthening", bFR: "Renforcement inébranlable de la foi", bEN: "Unshakable strengthening of faith" },
+      { id: 23, num: "023", title: "Al-Mu'minun", freq: 852, cFR: "Renforcement", cEN: "Strengthening", bFR: "Renforcement inébranlable de la faith", bEN: "Unshakable strengthening of faith" },
       { id: 24, num: "024", title: "An-Nur", freq: 963, cFR: "Lumière Divine", cEN: "Divine Light", bFR: "Illumination du cœur, de l'aura et de l'environnement", bEN: "Illumination of the heart, aura, and environment" },
       { id: 25, num: "025", title: "Al-Furqan", freq: 417, cFR: "Discernement", cEN: "Discernment", bFR: "Clarté de jugement et dissipation de l'illusion mentale", bEN: "Clarity of judgment and dissipation of mental illusion" },
       { id: 26, num: "026", title: "Ash-Shu'ara", freq: 528, cFR: "Résonance Cellulaire", cEN: "Cellular Resonance", bFR: "Harmonie vibratoire dans toutes les cellules du corps", bEN: "Vibrational harmony in all cells of the body" },
@@ -195,6 +207,86 @@
         desc: { FR: "Neutralise le mauvais œil (Ayn), la sorcellerie (Sihr) et protège l'aura en créant un bouclier vibratoire.", EN: "Neutralizes the evil eye (Ayn), sorcery (Sihr) and protects the aura by creating a vibrational shield." },
         tracks: [1, 2, 37, 38, 39],
         color: "from-red-500 to-rose-700"
+      },
+      {
+        id: "sihr_destruction",
+        icon: Zap,
+        title: { FR: "Destruction du Sihr (Magie Noire)", EN: "Sihr Destruction (Black Magic)" },
+        desc: { FR: "Cible et annihile les sortilèges complexes, les nœuds de sorcellerie et libère l'âme des emprises occultes.", EN: "Targets and annihilates complex spells, witchcraft knots, and frees the soul from occult holds." },
+        tracks: [2, 10, 20, 38, 39],
+        color: "from-fuchsia-700 to-purple-900"
+      },
+      {
+        id: "exorcism",
+        icon: Flame,
+        title: { FR: "Extraction & Expulsion (Djinn)", EN: "Extraction & Expulsion (Jinn)" },
+        desc: { FR: "Fréquences intenses conçues pour consumer les entités parasitaires, forcer l'expulsion et nettoyer les blocages démoniaques.", EN: "Intense frequencies designed to consume parasitic entities, force expulsion, and clear demonic blockages." },
+        tracks: [2, 33, 37, 38, 39],
+        color: "from-red-600 to-orange-800"
+      },
+      {
+        id: "clairvoyance",
+        icon: Eye,
+        title: { FR: "Clairvoyance & Al-Basira", EN: "Clairvoyance & Al-Basira" },
+        desc: { FR: "Ouvre l'œil du cœur (Basira), dissipe le voile de l'illusion spatio-temporelle et aiguise l'intuition spirituelle.", EN: "Opens the eye of the heart (Basira), dissipates the veil of spatio-temporal illusion, and sharpens spiritual intuition." },
+        tracks: [6, 17, 24, 25],
+        color: "from-cyan-400 to-blue-800"
+      },
+      {
+        id: "invincibility",
+        icon: Anchor,
+        title: { FR: "Forteresse Inébranlable", EN: "Unshakable Fortress" },
+        desc: { FR: "Ancrage suprême. Rend votre aura impénétrable aux attaques psychiques, au vampirisme énergétique et à la jalousie.", EN: "Supreme grounding. Makes your aura impenetrable to psychic attacks, energy vampirism, and jealousy." },
+        tracks: [2, 3, 18, 37],
+        color: "from-slate-400 to-slate-700"
+      },
+      {
+        id: "guidance",
+        icon: Compass,
+        title: { FR: "Guidance Divine & Destinée", EN: "Divine Guidance & Destiny" },
+        desc: { FR: "Aligne votre fréquence sur le plan divin. Élimine la confusion et attire les synchronicités pour prendre les bonnes décisions.", EN: "Aligns your frequency with the divine plan. Eliminates confusion and attracts synchronicities to make the right decisions." },
+        tracks: [1, 21, 24, 28],
+        color: "from-teal-400 to-emerald-700"
+      },
+      {
+        id: "soul_wash",
+        icon: Feather,
+        title: { FR: "Purification de l'Âme (Tawbah)", EN: "Purification of the Soul (Tawbah)" },
+        desc: { FR: "Un lavage de l'âme à très haute fréquence. Dissout la lourdeur des péchés passés et attire la Miséricorde absolue.", EN: "A very high-frequency soul wash. Dissolves the heaviness of past sins and attracts absolute Mercy." },
+        tracks: [5, 9, 15, 34],
+        color: "from-sky-300 to-indigo-600"
+      },
+      {
+        id: "miracles",
+        icon: Star,
+        title: { FR: "Manifestation des Miracles", EN: "Manifestation of Miracles" },
+        desc: { FR: "Active l'énergie de 'Kun Faya Kun'. Idéal pour les causes jugées impossibles, la fertilité et les interventions surnaturelles.", EN: "Activates the energy of 'Kun Faya Kun'. Ideal for seemingly impossible causes, fertility, and supernatural interventions." },
+        tracks: [19, 21, 33, 34],
+        color: "from-yellow-300 to-amber-600"
+      },
+      {
+        id: "ego_mastery",
+        icon: Key,
+        title: { FR: "Dompter l'Ego (An-Nafs)", EN: "Mastering the Ego (An-Nafs)" },
+        desc: { FR: "Brise les chaînes de l'addiction, maîtrise les pulsions destructrices et installe une paix profonde face aux murmures.", EN: "Breaks the chains of addiction, masters destructive impulses, and establishes deep peace against whispers." },
+        tracks: [12, 29, 31, 39],
+        color: "from-stone-400 to-stone-800"
+      },
+      {
+        id: "supreme_light",
+        icon: Crown,
+        title: { FR: "Ascension & Lumière (An-Nur)", EN: "Ascension & Light (An-Nur)" },
+        desc: { FR: "La fréquence des Anges. Élévation vibratoire ultime pour se connecter aux sphères célestes et irradier de pure lumière.", EN: "The frequency of Angels. Ultimate vibrational elevation to connect with celestial spheres and radiate pure light." },
+        tracks: [7, 17, 24, 32],
+        color: "from-amber-200 to-yellow-600"
+      },
+      {
+        id: "aura_renewal",
+        icon: Wind,
+        title: { FR: "Régénération de l'Aura", EN: "Aura Regeneration" },
+        desc: { FR: "Insuffle une énergie vitale purificatrice. Répare les brèches énergétiques causées par le stress, les maladies et les chocs occultes.", EN: "Breathes purifying vital energy. Repairs energetic breaches caused by stress, illnesses, and occult shocks." },
+        tracks: [8, 9, 16, 30],
+        color: "from-lime-400 to-green-700"
       },
       {
         id: "anxiety",
